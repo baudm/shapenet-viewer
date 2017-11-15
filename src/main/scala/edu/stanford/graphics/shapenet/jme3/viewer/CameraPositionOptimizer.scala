@@ -13,6 +13,7 @@ import com.jme3.renderer.Camera
 import com.jme3.scene.{Node, Spatial}
 
 import scala.concurrent.Promise
+import scala.util.Random;
 
 /**
  * Optimizes the view by positioning the camera appropriately
@@ -328,6 +329,7 @@ class CameraPositionOptimizer(val viewer: Viewer,
 
 class BasicCameraPositioner(val worldUp: Vector3f = JmeUtils.worldUp, val userData: UserData = null) extends Loggable {
   val defaultFov = 30f
+  val rng = new Random()
 
   /** Returns distance to fit giving bounding box in view */
   def getDistsToFit(bb: BoundingBox, width: Int, height: Int, fovy: Float = defaultFov): Vector3f = {
@@ -534,7 +536,7 @@ class BasicCameraPositioner(val worldUp: Vector3f = JmeUtils.worldUp, val userDa
       val camX = centroid.x + (rx*math.cos(theta)).toFloat
       val camY = centroid.y + (ry*math.sin(theta)).toFloat
       val camZ = centroid.z + (rz*math.cos(theta)).toFloat
-      CameraState(name, new Vector3f(camX, camY, camZ), worldUp, target = centroid )
+      CameraState(name, new Vector3f(camX, camY, camZ), worldUp, target = centroid, theta = theta, phi = phi)
     }
 
     // Position the camera.
@@ -543,7 +545,9 @@ class BasicCameraPositioner(val worldUp: Vector3f = JmeUtils.worldUp, val userDa
     val end = endAngle.getOrElse((math.Pi*2).toFloat + start)
     val phiDelta = (end - start)/nCameras
     for (i <- 0 until nCameras) yield {
-      positionToView("view" + i, dists, camAngleFromHorizontal.getOrElse(0), start+i*phiDelta)
+      val theta = 2 * rng.nextFloat() * Math.PI.toFloat
+      val phi = 2 * rng.nextFloat() * Math.PI.toFloat
+      positionToView("view" + i, dists, theta, phi)
     }
   }
 

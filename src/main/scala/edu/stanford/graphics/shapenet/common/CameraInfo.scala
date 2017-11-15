@@ -24,6 +24,8 @@ case class CameraState(name: String,
                        direction: Vector3f = null,
                        cameraCoordState: CameraCoordState = null,
                        targetIndices: Set[Int] = null,
+                       theta: Float = 0,
+                       phi: Float = 0,
                        var score: Double = Double.NaN) {
 
   // Set camera to this
