@@ -96,7 +96,7 @@ class GenerateImagesAppState(val viewer: Viewer,
       summaryFile = new CSVWriter(IOUtils.filePrintWriter(summaryFilename, append))
       if (!append || !hasData) {
         // Only output header if empty
-        summaryFile.writeNext(Array("image", "elevation", "azimuth")
+        summaryFile.writeNext(Array("scene","image","bbmin","bbmax","camera.position","camera.up","camera.target","camera.direction","camera.elevation","camera.azimuth")
           ++ (1 to nObjects).toArray.map( i => "obj" + i ))
       }
     }
@@ -314,7 +314,12 @@ class GenerateImagesAppState(val viewer: Viewer,
               var imageName = if (screenShotDir.nonEmpty) item.filename.replace(screenShotDir,"") else item.filename
               imageName = imageName.replaceAll("\\\\","/")
               val row =
-                Array(imageName,
+                Array(item.id, imageName,
+                  toString(bbmin), toString(bbmax),
+                  toString(item.camera.position),
+                  toString(item.camera.up),
+                  toString(item.camera.target),
+                  toString(item.camera.direction),
                   toString(item.camera.theta),
                   toString(item.camera.phi)) ++
                   item.selectedModelIndices.map( x => x.toString )
