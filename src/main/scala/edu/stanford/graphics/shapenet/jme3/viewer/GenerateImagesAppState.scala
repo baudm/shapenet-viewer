@@ -465,7 +465,7 @@ trait GenerateImagesFn {
   def toScreenShot(options: GenerateImagesFnOptions, cam: CameraState, index: Int, scene: Scene = null): ScreenShotInfo = {
     val screenshot = new ScreenShotInfo(
       id = options.sceneId + "-" + index,
-      filename = options.filenameBase + "-" + index + "." + options.imageFormat,
+      filename = options.filenameBase + "-" + index + "_" + cam.theta + "_" + cam.phi + "." + options.imageFormat,
       sceneId = options.sceneId,
       state = ScreenShotState.VIEW_READY,
       camera = cam,
