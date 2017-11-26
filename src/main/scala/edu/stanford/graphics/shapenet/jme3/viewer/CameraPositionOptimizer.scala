@@ -529,26 +529,35 @@ class BasicCameraPositioner(val worldUp: Vector3f = JmeUtils.worldUp, val userDa
 
     // theta is angleFromHorizontal
     // phi is rotation from front
-    def positionToView(name: String, dists: Vector3f, theta: Float, phi: Float): CameraState = {
+    def positionToView(name: String, dists: Vector3f, theta: Float, phi: Float, scale: Float): CameraState = {
       val ry = dims.y/2.0f + dists.y
       val rz = (dims.z/2.0f + dists.z)*math.cos(phi)*(-1)
       val rx = (dims.x/2.0f + dists.x)*math.sin(phi)
       val camX = centroid.x + (rx*math.cos(theta)).toFloat
       val camY = centroid.y + (ry*math.sin(theta)).toFloat
       val camZ = centroid.z + (rz*math.cos(theta)).toFloat
-      CameraState(name, new Vector3f(camX, camY, camZ), worldUp, target = centroid, theta = theta, phi = phi)
+      CameraState(name, new Vector3f(camX, camY, camZ), worldUp, target = centroid, theta = theta, phi = phi, scale = scale)
     }
 
-    // Position the camera.
-    val dists = _getCameraDistances(camera, bb, dims, maxDim*distanceScale, camPosType)
-    val start = startAngle.getOrElse(0.0f)
-    val end = endAngle.getOrElse((math.Pi*2).toFloat + start)
-    val phiDelta = (end - start)/nCameras
-    for (i <- 0 until nCameras) yield {
+    // Get best fit distance
+    val distsToFit = getDistsToFit(bb, camera.getWidth(), camera.getHeight(), defaultFov)
+    // Sample scales
+    val scales = for (i <- 0 until 10) yield (1f + rng.nextFloat())
+    // Sample viewpoints
+    val viewpoints = for (i <- 0 until nCameras) yield {
+      // Sample theta from [-30, 30] degrees
       val deg = rng.nextFloat() * 60.0f - 30.0f
       val theta = deg * Math.PI.toFloat / 180.0f
       val phi = 2 * rng.nextFloat() * Math.PI.toFloat
-      positionToView("view" + i, dists, theta, phi)
+      (theta, phi)
+    }
+    for {
+      scale <- scales
+      viewpoint <- viewpoints
+    } yield {
+      val dists = distsToFit.mult(scale)
+      val (theta, phi) = viewpoint
+      positionToView("view", dists, theta, phi, scale)
     }
   }
 

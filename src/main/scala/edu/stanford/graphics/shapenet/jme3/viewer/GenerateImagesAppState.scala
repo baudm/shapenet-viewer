@@ -96,7 +96,7 @@ class GenerateImagesAppState(val viewer: Viewer,
       summaryFile = new CSVWriter(IOUtils.filePrintWriter(summaryFilename, append))
       if (!append || !hasData) {
         // Only output header if empty
-        summaryFile.writeNext(Array("scene","image","bbmin","bbmax","camera.position","camera.up","camera.target","camera.direction","camera.elevation","camera.azimuth")
+        summaryFile.writeNext(Array("scene","image","bbmin","bbmax","camera.position","camera.up","camera.target","camera.direction","camera.elevation","camera.azimuth","camera.scale")
           ++ (1 to nObjects).toArray.map( i => "obj" + i ))
       }
     }
@@ -321,7 +321,8 @@ class GenerateImagesAppState(val viewer: Viewer,
                   toString(item.camera.target),
                   toString(item.camera.direction),
                   toString(item.camera.theta),
-                  toString(item.camera.phi)) ++
+                  toString(item.camera.phi),
+                  toString(item.camera.scale)) ++
                   item.selectedModelIndices.map( x => x.toString )
               summaryFile.writeNext(row)
               summaryFile.flush()
@@ -465,7 +466,7 @@ trait GenerateImagesFn {
   def toScreenShot(options: GenerateImagesFnOptions, cam: CameraState, index: Int, scene: Scene = null): ScreenShotInfo = {
     val screenshot = new ScreenShotInfo(
       id = options.sceneId + "-" + index,
-      filename = options.filenameBase + "-" + index + "_" + cam.theta + "_" + cam.phi + "." + options.imageFormat,
+      filename = options.filenameBase + "-" + index + "_" + cam.theta + "_" + cam.phi + "_" + cam.scale + "." + options.imageFormat,
       sceneId = options.sceneId,
       state = ScreenShotState.VIEW_READY,
       camera = cam,
