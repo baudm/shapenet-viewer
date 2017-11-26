@@ -545,7 +545,8 @@ class BasicCameraPositioner(val worldUp: Vector3f = JmeUtils.worldUp, val userDa
     val end = endAngle.getOrElse((math.Pi*2).toFloat + start)
     val phiDelta = (end - start)/nCameras
     for (i <- 0 until nCameras) yield {
-      val theta = 2 * rng.nextFloat() * Math.PI.toFloat
+      val deg = rng.nextFloat() * 60.0f - 30.0f
+      val theta = deg * Math.PI.toFloat / 180.0f
       val phi = 2 * rng.nextFloat() * Math.PI.toFloat
       positionToView("view" + i, dists, theta, phi)
     }
