@@ -541,22 +541,15 @@ class BasicCameraPositioner(val worldUp: Vector3f = JmeUtils.worldUp, val userDa
 
     // Get best fit distance
     val distsToFit = getDistsToFit(bb, camera.getWidth(), camera.getHeight(), defaultFov)
-    // Sample scales
-    val scales = for (i <- 0 until 10) yield (1f + rng.nextFloat())
-    // Sample viewpoints
-    val viewpoints = for (i <- 0 until nCameras) yield {
+    val range = math.sqrt(2.0).toFloat - 1f
+    for (i <- 0 until 10*nCameras) yield {
+      // Sample scale from [1.0, sqrt(2)]
+      val scale = 1f + range * rng.nextFloat()
+      val dists = distsToFit.mult(scale)
       // Sample theta from [-30, 30] degrees
       val deg = rng.nextFloat() * 60.0f - 30.0f
       val theta = deg * Math.PI.toFloat / 180.0f
       val phi = 2 * rng.nextFloat() * Math.PI.toFloat
-      (theta, phi)
-    }
-    for {
-      scale <- scales
-      viewpoint <- viewpoints
-    } yield {
-      val dists = distsToFit.mult(scale)
-      val (theta, phi) = viewpoint
       positionToView("view", dists, theta, phi, scale)
     }
   }
