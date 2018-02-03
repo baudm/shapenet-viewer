@@ -541,7 +541,7 @@ class BasicCameraPositioner(val worldUp: Vector3f = JmeUtils.worldUp, val userDa
 
     // Get best fit distance
     val distsToFit = getDistsToFit(bb, camera.getWidth(), camera.getHeight(), defaultFov)
-    for (i <- 0 until 512) yield {
+    for (i <- 0 until nCameras) yield {
       val theta = (60f * rng.nextFloat() - 30f) * (Math.PI.toFloat / 180f)
       val phi = 2f * Math.PI.toFloat * rng.nextFloat()
       val scale = 1f + rng.nextFloat()
